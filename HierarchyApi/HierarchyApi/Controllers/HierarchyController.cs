@@ -86,7 +86,8 @@ namespace HierarchyApi.Controllers
             return new Country
             {
                 Name = name,
-                Children = children.ToList()
+                Children = children.ToList(),
+                Attributes = new Attribute { Type = ItemType.Country.ToString() }
             };
         }
 
@@ -101,7 +102,11 @@ namespace HierarchyApi.Controllers
             return new Chain
             {
                 Name = name,
-                Attributes = new Attribute { Number = number.ToString() },
+                Attributes = new Attribute
+                {
+                    Number = number.ToString(),
+                    Type = ItemType.Chain.ToString()
+                },
                 Children = children.ToList()
             };
         }
@@ -117,7 +122,11 @@ namespace HierarchyApi.Controllers
             return new Store
             {
                 Name = name,
-                Attributes = new Attribute { Number = number.ToString() },
+                Attributes = new Attribute
+                {
+                    Number = number.ToString(),
+                    Type = ItemType.Store.ToString()
+                },
                 Children = children.Where(p => p != null).ToList()
             };
         }
@@ -135,7 +144,11 @@ namespace HierarchyApi.Controllers
             return new Workstation
             {
                 Name = name,
-                Attributes = new Attribute { Number = number.ToString() }
+                Attributes = new Attribute
+                {
+                    Number = number.ToString(),
+                    Type = ItemType.Workstation.ToString()
+                }
             };
         }
     }
