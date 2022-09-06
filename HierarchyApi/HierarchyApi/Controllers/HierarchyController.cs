@@ -1,9 +1,9 @@
-using HierarchyApi.Contracts;
-using HierarchyApi.Handlers;
-using Microsoft.AspNetCore.Mvc;
-
 namespace HierarchyApi.Controllers
 {
+    using Contracts;
+    using Handlers;
+    using Microsoft.AspNetCore.Mvc;
+
     [ApiController]
     [Route("[controller]")]
     public class HierarchyController : ControllerBase
