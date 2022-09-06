@@ -39,31 +39,33 @@ export default class NodeLabel extends React.PureComponent {
       <div className={className}>
         <Card className="cardview">
           <CardHeader
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             avatar={
               <Avatar aria-label="Recipe" className="avatar">
                 <Person />
               </Avatar>
             }
-            title="Shrimp and Chorizo Paella"
+            title={nodeData.name}
           />
 
-          <CardActionArea onClick={e => e.stopPropagation()}>
+          <CardActionArea onClick={(e) => e.stopPropagation()}>
             <Typography variant="body2" color="textSecondary" component="p">
-              {nodeData.name}
+              {nodeData.attributes != null && nodeData.attributes.hasOwnProperty("number")
+                ? nodeData.attributes.number
+                : ""}
             </Typography>
           </CardActionArea>
           <CardActions>
             <Button
               size="small"
               color="primary"
-              onClick={e =>
-                console.log((nodeData._collapsed = !nodeData._collapsed))
-              }
+              // onClick={(e) =>
+              //   console.log((nodeData._collapsed = !nodeData._collapsed))
+              // }
             >
               {nodeData._collapsed ? "Expand" : "Collapse"}
             </Button>
-            <Button className="flex" />
+            {/* <Button className="flex" /> */}
           </CardActions>
         </Card>
       </div>

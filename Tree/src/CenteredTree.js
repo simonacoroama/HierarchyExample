@@ -9,26 +9,61 @@ const containerStyles = {
 
 const myTreeData = [
   {
-    name: "Top Level",
+    name: "Rusta",
     attributes: {
       keyA: "val A",
       keyB: "val B",
-      keyC: "val C"
+      keyC: "val C",
     },
     children: [
       {
-        name: "Level 2: A",
+        name: "Germany",
         attributes: {
-          keyA: "val A",
-          keyB: "val B",
-          keyC: "val C"
-        }
+          code: "DE",
+        },
+        children: [
+          {
+            name: "Rusta Germany",
+            attributes: {
+              number: "01",
+            },
+            children: [
+              {
+                name: "10 Berlin",
+                attributes: {
+                  number: "10",
+                },
+                children: [
+                  {
+                    name: "POS 1",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
       {
-        name: "Level 2: B"
-      }
-    ]
-  }
+        name: "Sweden",
+        children: [
+          {
+            name: "Rusta Sweden",
+            attributes: {
+              number: "02",
+            },
+            children: [
+              {
+                name: "11 Stockholm",
+                attributes: {
+                  number: "11",
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export default class CenteredTree extends React.PureComponent {
