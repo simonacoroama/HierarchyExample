@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
 using HierarchyApi.Contracts;
@@ -8,112 +7,135 @@ namespace HierarchyApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class HierarchyController   : ControllerBase
+    public class HierarchyController : ControllerBase
     {
-        public int count = 0;
-        private IConfiguration Configuration;
-        private readonly ILogger<HierarchyController> _logger;
+        private readonly IConfiguration configuration;
+        private readonly ILogger<HierarchyController> logger;
 
-        public HierarchyController(ILogger<HierarchyController> logger,
-            IConfiguration _configuration)
+        public HierarchyController(
+            ILogger<HierarchyController> logger,
+            IConfiguration configuration)
         {
-            _logger = logger;
-            Configuration = _configuration;
+            this.logger = logger;
+            this.configuration = configuration;
         }
 
         [Microsoft.AspNetCore.Cors.EnableCors("AllowOrigin")]
         [HttpGet(Name = "GetHierarchy")]
         public Hierarchy Get()
         {
-            var dataTable = new DataTable();
-            
-            var connectionstring = this.Configuration.GetConnectionString("OBPConn");
-            //build the sqlconnection and execute the sql command
-            using (SqlConnection conn = new SqlConnection(connectionstring))
+            return new Hierarchy
             {
-                var sql = @"Select distinct st.id StoreId, st.number StoreNr, 
-st.Description StoreDescr, ch.Number ChainNumber, 
-ch.Description ChainDescription, ch.Id ChainId,
-country.CountryName CountryName, country.CountryId CountryId, 
-workstation.Number As WorkstationNumber,
-workstation.Description As WorkstationDescription 
-FROM
-[OBP].[config].[BusinessUnit] st left  join[OBP].[config].[BusinessUnit] ch on ch.id = st.ParentId and ch.BusinessUnitType = 1
-left join[OBP].[config].[Chain] chain on chain.BusinessUnitId = ch.Id
-left join[OBP].address.CountryName country on country.CountryId = chain.CountryId
-Left join OBP.config.Workstation workstation on workstation.BusinessUnitId = st.Id
-  where st.BusinessUnitType = 2 and
-  country.LanguageId = 'EN'
-order by ch.number,st.number, country.CountryId, workstation.Number
-";
+                Children = this.GetItems().ToList(),
+                Name = "Rusta"
+            };
+        }
+
+        private IEnumerable<Country> GetItems()
+        {
+            var dataTable = new DataTable();
+
+            var connectionString = this.configuration.GetConnectionString("OBPConn");
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                var sql =
+                    @"SELECT DISTINCT 
+	                    country.CountryName, 
+	                    ch.Number AS ChainNumber, 
+	                    ch.Description AS ChainDescription, 
+	                    st.Number AS StoreNr, 
+	                    st.Description AS StoreDescr, 	
+	                    workstation.Number AS WorkstationNumber,
+	                    workstation.Description AS WorkstationDescription
+                    FROM [OBP].[config].[BusinessUnit] st 
+                    LEFT JOIN [OBP].[config].[BusinessUnit] ch ON ch.Id = st.ParentId AND ch.BusinessUnitType = 1
+                    LEFT JOIN [OBP].[config].[Chain] chain ON chain.BusinessUnitId = ch.Id
+                    LEFT JOIN [OBP].address.CountryName country ON country.CountryId = chain.CountryId
+                    LEFT JOIN OBP.config.Workstation workstation ON workstation.BusinessUnitId = st.Id
+                    WHERE st.BusinessUnitType = 2 
+	                    AND country.LanguageId = 'EN'
+                    ORDER BY country.CountryName, ch.Number, st.number, workstation.Number
+                    ";
+
                 conn.Open();
+
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = sql;
-                    using (SqlDataReader rd = cmd.ExecuteReader())
-                    {    
+                    using (var rd = cmd.ExecuteReader())
+                    {
                         dataTable.Load(rd);
                     }
                 }
-                
             }
-            var items = dataTable.AsEnumerable().GroupBy(r => r["CountryId"])
+
+            return dataTable.AsEnumerable()
+                .GroupBy(r => r["CountryName"])
                 .Select(g => CreateCountry(g.ToArray()));
-
-            return
-                new Hierarchy
-                {
-                    Children = items.ToList(),
-                    Name = "DRS"
-                };
-           
-        }
-
-        private Chain CreateChain(DataRow[] rows)
-        {
-            var id = rows[0].Field<Guid>("ChainId");
-            var number = rows[0].Field<Int32>("ChainNumber");
-            var name = rows[0].Field<string>("ChainDescription");
-
-            var children = rows.GroupBy(r => r["StoreId"])
-              .Select(r => CreateStore(r.ToArray()));
-
-            return new Chain { Id = id, Name = name, Number = number, Children = children.ToList() };
         }
 
         private Country CreateCountry(DataRow[] rows)
         {
-            var id = rows[0].Field<string>("CountryId");
-            var name = rows[0].Field<String>("CountryName");
+            var name = rows[0].Field<string>("CountryName");
 
-            var children = rows.GroupBy(r => r["ChainId"])
-              .Select(r => CreateChain(r.ToArray()));
+            var children = rows.GroupBy(r => r["ChainNumber"])
+                .Select(r => CreateChain(r.ToArray()));
 
-            return new Country { CountryCode = id, Name = name, Children = children.ToList() };
+            return new Country
+            {
+                Name = name,
+                Children = children.ToList()
+            };
+        }
+
+        private Chain CreateChain(DataRow[] rows)
+        {
+            var number = rows[0].Field<int>("ChainNumber");
+            var name = rows[0].Field<string>("ChainDescription");
+
+            var children = rows.GroupBy(r => r["StoreNr"])
+              .Select(r => CreateStore(r.ToArray()));
+
+            return new Chain
+            {
+                Name = name,
+                Number = number,
+                Children = children.ToList()
+            };
         }
 
         private Store CreateStore(DataRow[] rows)
         {
-            var id = rows[0].Field<Guid>("StoreId");
-            var number = rows[0].Field<Int32>("StoreNr");
-            var name = rows[0].Field<String>("StoreDescr");
+            var number = rows[0].Field<int>("StoreNr");
+            var name = rows[0].Field<string>("StoreDescr");
+
             var children = rows.GroupBy(r => r["WorkstationNumber"])
              .Select(r => CreateWorkstation(r.ToArray()));
-            
 
-           // return new Store { Id = id, Name = name, Number = number };
-            return new Store { Id = id, Name = name, Number = number, Children = children.Where(p =>p !=null).ToList() };
+            return new Store
+            {
+                Name = name,
+                Number = number,
+                Children = children.Where(p => p != null).ToList()
+            };
         }
 
         private Workstation CreateWorkstation(DataRow[] rows)
         {
-            var number = rows[0].Field<Int32?>("WorkstationNumber");
-            var name = rows[0].Field<String>("WorkstationDescription");
-            if(number == null)
+            var number = rows[0].Field<int?>("WorkstationNumber");
+            var name = rows[0].Field<string>("WorkstationDescription");
+
+            if (number == null)
             {
                 return null;
             }
-            return new Workstation { Number = number, Name = name };
+
+            return new Workstation
+            {
+                Number = number,
+                Name = name
+            };
         }
     }
 }

@@ -6,8 +6,6 @@
 
         public string Name { get; set; }
 
-        public Guid Id { get; set; }
-
         public List<Store> Children { get; set; }
     }
 }
