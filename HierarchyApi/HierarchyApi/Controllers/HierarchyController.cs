@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
+using HierarchyApi.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HierarchyApi.Controllers
