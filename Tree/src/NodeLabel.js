@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import Person from "@material-ui/icons/Person";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const useStyles = makeStyles({
   card: {
@@ -42,7 +43,7 @@ export default class NodeLabel extends React.PureComponent {
             onClick={(e) => e.stopPropagation()}
             avatar={
               <Avatar aria-label="Recipe" className="avatar">
-                <Person />
+                <ShoppingCartIcon /> 
               </Avatar>
             }
             title={nodeData.name}
