@@ -4,7 +4,7 @@
     {
         public string Name { get; set; }
 
-        public int Number { get; set; }
+        public Attribute Attributes { get; set; }
 
         public List<Workstation> Children { get; set; }
     }

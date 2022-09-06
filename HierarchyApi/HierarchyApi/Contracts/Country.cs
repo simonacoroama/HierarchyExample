@@ -5,6 +5,5 @@
         public string Name { get; set; }
 
         public List<Chain> Children { get; set; }
-
     }
 }

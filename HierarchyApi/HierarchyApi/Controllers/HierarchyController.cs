@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.SqlClient;
 using HierarchyApi.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Attribute = HierarchyApi.Contracts.Attribute;
 
 namespace HierarchyApi.Controllers
 {
@@ -60,7 +61,7 @@ namespace HierarchyApi.Controllers
 
                 conn.Open();
 
-                using (SqlCommand cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = sql;
                     using (var rd = cmd.ExecuteReader())
@@ -100,7 +101,7 @@ namespace HierarchyApi.Controllers
             return new Chain
             {
                 Name = name,
-                Number = number,
+                Attributes = new Attribute { Number = number.ToString() },
                 Children = children.ToList()
             };
         }
@@ -116,7 +117,7 @@ namespace HierarchyApi.Controllers
             return new Store
             {
                 Name = name,
-                Number = number,
+                Attributes = new Attribute { Number = number.ToString() },
                 Children = children.Where(p => p != null).ToList()
             };
         }
@@ -133,8 +134,8 @@ namespace HierarchyApi.Controllers
 
             return new Workstation
             {
-                Number = number,
-                Name = name
+                Name = name,
+                Attributes = new Attribute { Number = number.ToString() }
             };
         }
     }
