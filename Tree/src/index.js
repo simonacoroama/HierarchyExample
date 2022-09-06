@@ -7,6 +7,7 @@ import "./styles.css";
 function App() {
   return (
     <div className="App">
+      <h1>Organization Hierarchy</h1>
       <Tree />
     </div>
   );

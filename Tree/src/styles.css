@@ -150,3 +150,13 @@ drawer {
   height: 200px;
   width: 400px;
 }
+
+.stroke{
+  stroke: none !important;
+  fill: black !important;
+}
+
+.MuiPaper-elevation1 {
+    box-shadow: 
+    3px 1px 3px 3px rgb(0 0 0 / 20%), 3px 1px 1px 3px rgb(0 0 0 / 14%), 3px 2px 1px -1px rgb(0 0 0 / 12%);
+}

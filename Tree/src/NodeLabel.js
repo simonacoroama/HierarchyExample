@@ -15,7 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import Person from "@material-ui/icons/Person";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ShoppingCartIcon from "@material-ui/icons//ShoppingCart";
 
 const useStyles = makeStyles({
   card: {
@@ -43,7 +43,7 @@ export default class NodeLabel extends React.PureComponent {
             onClick={(e) => e.stopPropagation()}
             avatar={
               <Avatar aria-label="Recipe" className="avatar">
-                <ShoppingCartIcon /> 
+                <ShoppingCartIcon className="stroke" />
               </Avatar>
             }
             title={nodeData.name}
@@ -51,8 +51,17 @@ export default class NodeLabel extends React.PureComponent {
 
           <CardActionArea onClick={(e) => e.stopPropagation()}>
             <Typography variant="body2" color="textSecondary" component="p">
-              {nodeData.attributes != null && nodeData.attributes.hasOwnProperty("number")
-                ? nodeData.attributes.number
+              {nodeData.attributes != null &&
+              nodeData.attributes.hasOwnProperty("number") &&
+              nodeData.attributes.number != null
+                ? `Number: ${nodeData.attributes.number}`
+                : ""}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {nodeData.attributes != null &&
+              nodeData.attributes.hasOwnProperty("type") &&
+              nodeData.attributes.type != null
+                ? `Type: ${nodeData.attributes.type}`
                 : ""}
             </Typography>
           </CardActionArea>
